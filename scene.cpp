@@ -129,6 +129,7 @@ void setting_process(ALLEGRO_EVENT event)
 void setting_draw()
 {
     al_draw_bitmap(setting_background, 0, 0, 0); //背景圖
+    al_draw_text(font_ins, al_map_rgb(255, 255, 255), WIDTH / 2, 580, ALLEGRO_ALIGN_CENTRE, "Press 'BACKSPACE' to MENU.");
 }
 void setting_destroy()
 {
@@ -157,7 +158,8 @@ void help_process(ALLEGRO_EVENT event)
 void help_draw()
 {
     al_draw_bitmap(help_background, 0, 0, 0); //背景圖
-    al_draw_bitmap(help_frame, 0, 0, 0); //背景圖
+    al_draw_bitmap(help_frame, 600, 0, 0); //背景圖
+    al_draw_text(font_ins, al_map_rgb(255, 255, 255), WIDTH / 2, 580, ALLEGRO_ALIGN_CENTRE, "Press 'BACKSPACE' to MENU.");
 }
 void help_destroy()
 {

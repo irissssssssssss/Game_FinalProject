@@ -92,7 +92,7 @@ void charater_update()
         }
     }
 
-    if (key_state[ALLEGRO_KEY_SPACE])
+    if (key_state[ALLEGRO_KEY_UP])
     {
         if (chara.y == 0) {
             chara.y -= jump_val;
