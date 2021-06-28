@@ -1,7 +1,7 @@
 #include "GameWindow.h"
 
 bool draw = false;
-int window = 1;
+int window = MENU;
 
 const char *title = "Final Project 106031245 / 1092169S";
 
@@ -68,7 +68,7 @@ void game_begin()
 {
 #if 0
     // Load sound 片頭音樂
-    song = al_load_sample("./sound/manu.wav");
+    song = al_load_sample("./sound/MENU.wav");
     al_reserve_samples(20);
     sample_instance = al_create_sample_instance(song);
     // Loop the song until the display closes
@@ -85,32 +85,65 @@ void game_begin()
 }
 void game_update()
 {
-    if (judge_next_window == 1)
+    switch(judge_next_window) {
+    case NONE:
+        break;
+    case MENU:
+        window = MENU;
+        break;
+    case START:
+        switch (window) {
+        case START:
+            charater_update();
+            break;
+        case MENU:
+            menu_destroy();
+            game_scene_init();
+            window = START;
+        default:
+            break;
+        }
+        break;
+    case SETTING:
+        setting_init();
+        judge_next_window = NONE;
+        window = SETTING;
+        break;
+    case HELP:
+        help_init();
+        judge_next_window = NONE;
+        window = HELP;
+        break;
+    default:
+        break;
+    }
+#if 0
+    if (judge_next_window == START)
     {
-        if (window == 1)
+        if (window == MENU)
         {
             // not back menu anymore, therefore destroy it
             menu_destroy();
             // initialize next scene
             game_scene_init();
-            judge_next_window = 1;
-            window = 2;
+            window = START;
         }
-        if (window == 2)
+        if (window == START)
         {
             charater_update();
         }
     }
-    else if (judge_next_window == 2)
+    else if (judge_next_window == SETTING)
     {
-        menu_destroy();
         game_setting_init();
+        window = SETTING;
+        judge_next_window = NONE;
     }
-    else if (judge_next_window == 3)
+    else if (judge_next_window == HELP)
     {
-        menu_destroy();
         game_help_init();
     }
+#endif
 }
 int process_event()
 {
@@ -118,6 +151,23 @@ int process_event()
     ALLEGRO_EVENT event;
     al_wait_for_event(event_queue, &event);
     // process the event of other component
+    switch (window) {
+        case MENU:
+            menu_process(event);
+            break;
+        case START:
+            charater_process(event);
+            break;
+        case SETTING:
+            setting_process(event);
+            break;
+        case HELP:
+            help_process(event);
+            break;
+        default:
+            break;
+    }
+#if 0
     if (window == 1)
     {
         menu_process(event);
@@ -126,6 +176,7 @@ int process_event()
     {
         charater_process(event);
     }
+#endif
 
     // Shutdown our program 遊戲畫面右上角的叉叉
     if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
@@ -138,6 +189,21 @@ int process_event()
 }
 void game_draw() //範例遊戲有兩個畫面 所以開兩個window
 {
+    switch(window) {
+        case MENU:
+            menu_draw();
+            break;
+        case START:
+            game_scene_draw();
+            break;
+        case SETTING:
+            setting_draw();
+            break;
+        case HELP:
+            help_draw();
+            break;
+    }
+#if 0
     if (window == 1) // 定義在本頁第一行
     {
         menu_draw();
@@ -146,6 +212,7 @@ void game_draw() //範例遊戲有兩個畫面 所以開兩個window
     {
         game_scene_draw();
     }
+#endif
     al_flip_display();
 }
 int game_run()

@@ -18,4 +18,11 @@ extern bool key_state[ALLEGRO_KEY_MAX];
 extern int judge_next_window;
 extern ALLEGRO_EVENT_QUEUE *event_queue;
 extern ALLEGRO_TIMER *fps;
+enum {
+    NONE,
+    MENU,
+    START,
+    SETTING,
+    HELP,
+};
 #endif
