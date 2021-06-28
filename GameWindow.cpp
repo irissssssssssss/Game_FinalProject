@@ -85,7 +85,7 @@ void game_begin()
 }
 void game_update()
 {
-    if (judge_next_window)
+    if (judge_next_window == 1)
     {
         if (window == 1)
         {
@@ -93,13 +93,23 @@ void game_update()
             menu_destroy();
             // initialize next scene
             game_scene_init();
-            judge_next_window = false;
+            judge_next_window = 1;
             window = 2;
         }
+        if (window == 2)
+        {
+            charater_update();
+        }
     }
-    if (window == 2)
+    else if (judge_next_window == 2)
     {
-        charater_update();
+        menu_destroy();
+        game_setting_init();
+    }
+    else if (judge_next_window == 3)
+    {
+        menu_destroy();
+        game_help_init();
     }
 }
 int process_event()

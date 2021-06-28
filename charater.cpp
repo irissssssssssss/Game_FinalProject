@@ -16,7 +16,7 @@ typedef struct character //角色位置
     ALLEGRO_BITMAP *img_move[2];        //移動 用兩張圖
     ALLEGRO_BITMAP *img_atk[2];         // 攻擊 用兩張圖
     ALLEGRO_SAMPLE_INSTANCE *atk_Sound; //攻擊之音效
-    //控制練續動作之動畫時間(以下)
+    //控制連續動作之動畫時間(以下)
     int anime;      // counting the time of animation
     int anime_time; // indicate how long the animation
 } Character;
@@ -28,7 +28,7 @@ void character_init()
     for (int i = 1; i <= 2; i++)
     {
         char temp[50];
-        sprintf(temp, "./image/char_move%d.png", i); //用迴圈 一張張把圖片load進去
+        sprintf(temp, "./image/run_%d.png", i); //用迴圈 一張張把圖片load進去
         chara.img_move[i - 1] = al_load_bitmap(temp);
     }
     for (int i = 1; i <= 2; i++)
@@ -46,8 +46,8 @@ void character_init()
     // initial the geometric information of character
     chara.width = al_get_bitmap_width(chara.img_move[0]);
     chara.height = al_get_bitmap_height(chara.img_move[0]);
-    chara.x = WIDTH / 2;
-    chara.y = HEIGHT / 2;
+    chara.x = 0;
+    chara.y = 0;
     chara.dir = false;
 
     // initial the animation component
@@ -67,7 +67,7 @@ void charater_process(ALLEGRO_EVENT event)
         }
         // process the keyboard event
     }
-    else if (event.type == ALLEGRO_EVENT_KEY_DOWN) //按 往下按 執行動作
+    else if (event.type == ALLEGRO_EVENT_KEY_DOWN) //按 往下 執行動作
     {
         key_state[event.keyboard.keycode] = true;
         chara.anime = 0;
@@ -132,22 +132,22 @@ void character_draw()
         {
             if (chara.anime < chara.anime_time / 2) //移動之第一張圖
             {
-                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
+                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, 0);
             }
             else //大於 移動之第二張圖
             {
-                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
+                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, 0);
             }
         }
         else
         {
             if (chara.anime < chara.anime_time / 2)
             {
-                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, 0);
+                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
             }
             else
             {
-                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, 0);
+                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
             }
         }
     }
