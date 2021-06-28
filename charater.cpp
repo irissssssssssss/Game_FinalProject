@@ -26,13 +26,16 @@ ALLEGRO_SAMPLE *sample = NULL;
 const int jump_val_init = 50;
 int jump_val;
 #define JUMP_VEC  4
-void character_init()
+void character_init(CHARATER charater)
 {
     // load character images
     for (int i = 1; i <= 2; i++)
     {
         char temp[50];
-        sprintf(temp, "./image/girl_%d.png", i); //用迴圈 一張張把圖片load進去
+        if (charater == BOY)
+            sprintf(temp, "./image/boy_%d.png", i); //用迴圈 一張張把圖片load進去
+        else if (charater == GIRL)
+            sprintf(temp, "./image/girl_%d.png", i); //用迴圈 一張張把圖片load進去
         chara.img_move[i - 1] = al_load_bitmap(temp);
     }
     for (int i = 1; i <= 2; i++)

@@ -8,3 +8,6 @@ ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 ALLEGRO_TIMER *fps = NULL;
 bool key_state[ALLEGRO_KEY_MAX] = {false};
 int judge_next_window = NONE;
+CHARATER chose_charater = BOY;
+int window = MENU;
+bool chose = false;

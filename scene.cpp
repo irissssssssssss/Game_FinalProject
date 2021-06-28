@@ -3,6 +3,8 @@
 ALLEGRO_FONT *font = NULL;
 ALLEGRO_FONT *font_ins = NULL;
 ALLEGRO_BITMAP *menu_background = NULL;
+ALLEGRO_BITMAP *chose_background = NULL;
+ALLEGRO_BITMAP *boygirl_background = NULL;
 ALLEGRO_BITMAP *game_background = NULL;
 ALLEGRO_BITMAP *setting_background = NULL;
 ALLEGRO_BITMAP *help_background = NULL;
@@ -29,7 +31,7 @@ static void song_setting(ALLEGRO_SAMPLE *song, ALLEGRO_SAMPLE_INSTANCE *instance
 // function of menu
 void menu_init()
 { //放主畫面會有的物件
-    song_setting(menu_song, menu_sample_instance, "./sound/menu.wav");
+    song_setting(menu_song, menu_sample_instance, "./sound/game_2.wav");
     font = al_load_ttf_font("./font/Malapropism.ttf", 28, 0);
     font_ins = al_load_ttf_font("./font/pirulen.ttf", 15, 0);
     menu_background = al_load_bitmap("./image/background.jpeg");
@@ -40,7 +42,7 @@ void menu_process(ALLEGRO_EVENT event)
     if (event.type == ALLEGRO_EVENT_KEY_UP) {
         switch(event.keyboard.keycode) {
             case ALLEGRO_KEY_ENTER:
-                judge_next_window = START;
+                judge_next_window = CHOSE_CHAR;
                 break;
             case ALLEGRO_KEY_S:
                 judge_next_window = SETTING;
@@ -82,7 +84,7 @@ void menu_draw() //第一畫面內容
 }
 void menu_destroy()
 {
-    al_destroy_font(font);
+    //al_destroy_font(font);
     al_destroy_bitmap(menu_background);
     al_destroy_bitmap(press);
     //al_destroy_sample(menu_song);
@@ -90,11 +92,11 @@ void menu_destroy()
 }
 
 // function of game_scene
-void game_scene_init()
+void game_scene_init(CHARATER charater)
 {
     //song_setting(game_song, game_sample_instance, "./sound/game_2.mp3");
     song_setting(menu_song, menu_sample_instance, "./sound/game_2.wav");
-    character_init();
+    character_init(charater);
     game_background = al_load_bitmap("./image/background.jpeg"); //背景動圖
 }
 void game_scene_draw() //第二畫面內容 騎士
@@ -109,6 +111,40 @@ void game_scene_destroy()
 }
 
 // function of game_setting
+void chose_init()
+{
+    //song_setting(game_song, game_sample_instance, "./sound/game_1.mp3");
+    chose_background = al_load_bitmap("./image/background.jpeg"); //背景動圖
+    boygirl_background = al_load_bitmap("./image/boygirl.png"); //背景動圖
+}
+void chose_process(ALLEGRO_EVENT event)
+{
+    if (event.type == ALLEGRO_EVENT_KEY_UP) {
+        switch(event.keyboard.keycode) {
+            case ALLEGRO_KEY_B:
+                chose_charater = BOY;
+                judge_next_window = START;
+                break;
+            case ALLEGRO_KEY_G:
+                chose_charater = GIRL;
+                judge_next_window = START;
+                break;
+            default:
+                break;
+        }
+    }
+}
+void chose_draw()
+{
+    al_draw_bitmap(chose_background, 0, 0, 0); //背景圖
+    al_draw_bitmap(boygirl_background, 500, 0, 0); //背景圖
+    al_draw_text(font_ins, al_map_rgb(255, 255, 255), WIDTH / 2, 580, ALLEGRO_ALIGN_CENTRE, "Press 'B' chose BOY, Press 'G' chose Girl");
+}
+void chose_destroy()
+{
+    al_destroy_bitmap(chose_background);
+}
+
 void setting_init()
 {
     //song_setting(game_song, game_sample_instance, "./sound/game_1.mp3");

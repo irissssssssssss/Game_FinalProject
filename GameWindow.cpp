@@ -1,7 +1,6 @@
 #include "GameWindow.h"
 
 bool draw = false;
-int window = MENU;
 
 const char *title = "Final Project 106031245 / 1092169S";
 
@@ -96,13 +95,20 @@ void game_update()
         case START:
             charater_update();
             break;
-        case MENU:
+        case CHOSE_CHAR:
+            chose_destroy();
             menu_destroy();
-            game_scene_init();
+            game_scene_init(chose_charater);
             window = START;
+            break;
         default:
             break;
         }
+        break;
+    case CHOSE_CHAR:
+        chose_init();
+        judge_next_window = NONE;
+        window = CHOSE_CHAR;
         break;
     case SETTING:
         setting_init();
@@ -155,6 +161,9 @@ int process_event()
         case MENU:
             menu_process(event);
             break;
+        case CHOSE_CHAR:
+            chose_process(event);
+            break;
         case START:
             charater_process(event);
             break;
@@ -193,6 +202,9 @@ void game_draw() //範例遊戲有兩個畫面 所以開兩個window
     switch(window) {
         case MENU:
             menu_draw();
+            break;
+        case CHOSE_CHAR:
+            chose_draw();
             break;
         case START:
             game_scene_draw();

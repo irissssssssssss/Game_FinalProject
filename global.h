@@ -18,11 +18,19 @@ extern bool key_state[ALLEGRO_KEY_MAX];
 extern int judge_next_window;
 extern ALLEGRO_EVENT_QUEUE *event_queue;
 extern ALLEGRO_TIMER *fps;
-enum {
+enum window {
     NONE,
     MENU,
+    CHOSE_CHAR,
     START,
     SETTING,
     HELP,
 };
+typedef enum {
+    BOY,
+    GIRL
+} CHARATER;
+extern CHARATER chose_charater;
+extern int window;
+extern bool chose;
 #endif
