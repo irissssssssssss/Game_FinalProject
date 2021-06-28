@@ -144,7 +144,7 @@ void help_init()
 }
 void help_process(ALLEGRO_EVENT event)
 {
-    if (event.type = ALLEGRO_EVENT_KEY_UP) {
+    if (event.type == ALLEGRO_EVENT_KEY_UP) {
         switch(event.keyboard.keycode) {
             case ALLEGRO_KEY_BACKSPACE:
                 judge_next_window = MENU;
