@@ -32,7 +32,7 @@ void character_init()
     for (int i = 1; i <= 2; i++)
     {
         char temp[50];
-        sprintf(temp, "./image/run_%d.png", i); //用迴圈 一張張把圖片load進去
+        sprintf(temp, "./image/girl_%d.png", i); //用迴圈 一張張把圖片load進去
         chara.img_move[i - 1] = al_load_bitmap(temp);
     }
     for (int i = 1; i <= 2; i++)

@@ -93,7 +93,7 @@ void menu_destroy()
 void game_scene_init()
 {
     //song_setting(game_song, game_sample_instance, "./sound/game_2.mp3");
-    song_setting(menu_song, menu_sample_instance, "./sound/game_2.mp3");
+    song_setting(menu_song, menu_sample_instance, "./sound/game_2.wav");
     character_init();
     game_background = al_load_bitmap("./image/background.jpeg"); //背景動圖
 }
