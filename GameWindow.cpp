@@ -184,7 +184,8 @@ int process_event()
     else if (event.type == ALLEGRO_EVENT_TIMER)
         if (event.timer.source == fps)
             draw = true;
-    game_update();
+    if (draw)
+        game_update();
     return 0;
 }
 void game_draw() //範例遊戲有兩個畫面 所以開兩個window

@@ -138,9 +138,9 @@ void character_draw()
     if (chara.state == STOP) //角色什麼都不做時 在stop
     {
         if (chara.dir) //角色面對方向
-            al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
-        else
             al_draw_bitmap(chara.img_move[0], chara.x, chara.y, 0);
+        else
+            al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
     }
     else if (chara.state == MOVE) //角色移動之動畫
     {
@@ -198,22 +198,22 @@ void character_draw()
         {
             if (chara.anime < chara.anime_time / 2) //移動之第一張圖
             {
-                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, 0);
+                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
             }
             else //大於 移動之第二張圖
             {
-                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, 0);
+                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
             }
         }
         else
         {
             if (chara.anime < chara.anime_time / 2)
             {
-                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
+                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, 0);
             }
             else
             {
-                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
+                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, 0);
             }
         }
     }
