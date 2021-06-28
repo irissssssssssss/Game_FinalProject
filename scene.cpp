@@ -37,7 +37,7 @@ void menu_init()
 }
 void menu_process(ALLEGRO_EVENT event)
 {
-    if (event.type = ALLEGRO_EVENT_KEY_UP) {
+    if (event.type == ALLEGRO_EVENT_KEY_UP) {
         switch(event.keyboard.keycode) {
             case ALLEGRO_KEY_ENTER:
                 judge_next_window = START;
@@ -116,7 +116,7 @@ void setting_init()
 }
 void setting_process(ALLEGRO_EVENT event)
 {
-    if (event.type = ALLEGRO_EVENT_KEY_UP) {
+    if (event.type == ALLEGRO_EVENT_KEY_UP) {
         switch(event.keyboard.keycode) {
             case ALLEGRO_KEY_BACKSPACE:
                 judge_next_window = MENU;
