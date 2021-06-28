@@ -2,16 +2,16 @@
 
 ALLEGRO_FONT *font = NULL;
 ALLEGRO_FONT *font_ins = NULL;
-ALLEGRO_BITMAP *manu_background = NULL;
+ALLEGRO_BITMAP *menu_background = NULL;
 ALLEGRO_BITMAP *game_background = NULL;
 ALLEGRO_BITMAP *setting_background = NULL;
 ALLEGRO_BITMAP *help_background = NULL;
 ALLEGRO_BITMAP *press = NULL;
 ALLEGRO_BITMAP *help_frame = NULL;
-ALLEGRO_SAMPLE *manu_song = NULL;
-ALLEGRO_SAMPLE_INSTANCE *manu_sample_instance;
+ALLEGRO_SAMPLE *menu_song = NULL;
+ALLEGRO_SAMPLE_INSTANCE *menu_sample_instance = NULL;
 ALLEGRO_SAMPLE *game_song = NULL;
-ALLEGRO_SAMPLE_INSTANCE *game_sample_instance;
+ALLEGRO_SAMPLE_INSTANCE *game_sample_instance = NULL;
 
 static void song_setting(ALLEGRO_SAMPLE *song, ALLEGRO_SAMPLE_INSTANCE *instance, char *path)
 {
@@ -19,7 +19,7 @@ static void song_setting(ALLEGRO_SAMPLE *song, ALLEGRO_SAMPLE_INSTANCE *instance
     al_reserve_samples(20);
     instance = al_create_sample_instance(song);
     // Loop the song until the display close
-    al_set_sample_instance_playmode(instance, ALLEGRO_PLAYMODE_LOOP);
+    al_set_sample_instance_playmode(instance, ALLEGRO_PLAYMODE_ONCE);
     al_restore_default_mixer();
     al_attach_sample_instance_to_mixer(instance, al_get_default_mixer());
     // set the volume of instance
@@ -29,10 +29,10 @@ static void song_setting(ALLEGRO_SAMPLE *song, ALLEGRO_SAMPLE_INSTANCE *instance
 // function of menu
 void menu_init()
 { //放主畫面會有的物件
-    song_setting(manu_song, manu_sample_instance, "./sound/manu.wav");
+    song_setting(menu_song, menu_sample_instance, "./sound/menu.wav");
     font = al_load_ttf_font("./font/Malapropism.ttf", 28, 0);
     font_ins = al_load_ttf_font("./font/pirulen.ttf", 15, 0);
-    manu_background = al_load_bitmap("./image/background.jpeg");
+    menu_background = al_load_bitmap("./image/background.jpeg");
     press = al_load_bitmap("./image/press.png");
 }
 void menu_process(ALLEGRO_EVENT event)
@@ -71,7 +71,7 @@ void menu_draw() //第一畫面內容
     al_draw_text(font, al_map_rgb(255, 255, 255), WIDTH / 2, 85, ALLEGRO_ALIGN_CENTRE, "START"); //正方形 內有文字
     al_draw_rectangle(WIDTH / 2 - 50, 72, WIDTH / 2 + 50, 108, al_map_rgb(255, 255, 255), 0);
 #endif
-    al_draw_bitmap(manu_background, 0, 0, 0);
+    al_draw_bitmap(menu_background, 0, 0, 0);
     al_draw_bitmap(press, 650, 80, 0);
     al_draw_text(font, al_map_rgb(255, 255, 255), WIDTH / 2, 200, ALLEGRO_ALIGN_CENTRE, "START"); //文字
     al_draw_text(font, al_map_rgb(255, 255, 255), WIDTH / 2, 315, ALLEGRO_ALIGN_CENTRE, "SETTING");
@@ -83,16 +83,17 @@ void menu_draw() //第一畫面內容
 void menu_destroy()
 {
     al_destroy_font(font);
-    al_destroy_bitmap(manu_background);
+    al_destroy_bitmap(menu_background);
     al_destroy_bitmap(press);
-    al_destroy_sample(manu_song);
-    al_destroy_sample_instance(manu_sample_instance);
+    //al_destroy_sample(menu_song);
+    //al_destroy_sample_instance(menu_sample_instance);
 }
 
 // function of game_scene
 void game_scene_init()
 {
-    song_setting(game_song, game_sample_instance, "./sound/game_1.mp3");
+    //song_setting(game_song, game_sample_instance, "./sound/game_2.mp3");
+    song_setting(menu_song, menu_sample_instance, "./sound/game_2.mp3");
     character_init();
     game_background = al_load_bitmap("./image/background.jpeg"); //背景動圖
 }

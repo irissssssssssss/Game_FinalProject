@@ -5,7 +5,8 @@ enum //角色會出現的行為
 {
     STOP = 0,
     MOVE,
-    ATK
+    ATK,
+    JUMP
 };
 typedef struct character //角色位置
 {
@@ -22,6 +23,9 @@ typedef struct character //角色位置
 } Character;
 Character chara;
 ALLEGRO_SAMPLE *sample = NULL;
+const int jump_val_init = 50;
+int jump_val;
+#define JUMP_VEC  4
 void character_init()
 {
     // load character images
@@ -79,13 +83,29 @@ void charater_process(ALLEGRO_EVENT event)
 }
 void charater_update()
 {
-    // use the idea of finite state machine to deal with different state
-    /*if (key_state[ALLEGRO_KEY_W])
+    if (chara.y != 0) {
+        chara.y -= jump_val;
+        jump_val -= JUMP_VEC;
+        if (chara.y >= 0) {
+            chara.y = 0;
+            jump_val = jump_val_init;
+        }
+    }
+
+    if (key_state[ALLEGRO_KEY_SPACE])
     {
-        chara.y -= 5;
-        chara.state = MOVE;
-    }*/
-    if (key_state[ALLEGRO_KEY_A])
+        if (chara.y == 0) {
+            chara.y -= jump_val;
+            jump_val -= JUMP_VEC;
+            chara.state = JUMP;
+            if (chara.y >= 0) {
+                chara.y = 0;
+                jump_val = jump_val_init;
+            }
+        }
+    }
+
+    if (key_state[ALLEGRO_KEY_LEFT])
     {
         chara.dir = false;
         chara.x -= 5;
@@ -96,15 +116,11 @@ void charater_update()
         chara.y += 5;
         chara.state = MOVE;
     }*/
-    else if (key_state[ALLEGRO_KEY_D])
+    else if (key_state[ALLEGRO_KEY_RIGHT])
     {
         chara.dir = true;
         chara.x += 5;
         chara.state = MOVE;
-    }
-    else if (key_state[ALLEGRO_KEY_SPACE]) //空白鍵- 攻擊
-    {
-        chara.state = ATK;
     }
     else if (chara.anime == chara.anime_time - 1) //30幀結束
     {
@@ -175,6 +191,29 @@ void character_draw()
             {
                 al_draw_bitmap(chara.img_atk[1], chara.x, chara.y, 0);
                 al_play_sample_instance(chara.atk_Sound);
+            }
+        }
+    } else if (chara.state == JUMP) {
+        if (chara.dir)
+        {
+            if (chara.anime < chara.anime_time / 2) //移動之第一張圖
+            {
+                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, 0);
+            }
+            else //大於 移動之第二張圖
+            {
+                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, 0);
+            }
+        }
+        else
+        {
+            if (chara.anime < chara.anime_time / 2)
+            {
+                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
+            }
+            else
+            {
+                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
             }
         }
     }
