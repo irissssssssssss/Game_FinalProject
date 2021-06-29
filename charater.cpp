@@ -11,15 +11,15 @@ enum //角色會出現的行為
 #define LITTLE_MONSTER_NUM 20
 typedef struct character //角色位置
 {
-    int x, y;                            // the position of image
-    int width, height;                   // the width and height of image
-    bool dir;                            // left: false, right: true 方向
-    int state;                           // the state of character
-    ALLEGRO_BITMAP *img_move[2];         //移動 用兩張圖
-    ALLEGRO_BITMAP *img_atk[2];          // 攻擊 用兩張圖
-    ALLEGRO_BITMAP *img_hurt[2];          // 攻擊 用兩張圖
-    ALLEGRO_SAMPLE_INSTANCE *atk_Sound;  //跳躍之音效
-    ALLEGRO_SAMPLE_INSTANCE *jump_Sound; //跳躍之音效
+    int x, y;                                // the position of image
+    int width, height;                       // the width and height of image
+    bool dir;                                // left: false, right: true 方向
+    int state;                               // the state of character
+    ALLEGRO_BITMAP *img_move[2];             //移動 用兩張圖
+    ALLEGRO_BITMAP *img_atk[2];              // 攻擊 用兩張圖
+    ALLEGRO_BITMAP *img_hurt[2];             // 攻擊 用兩張圖
+    ALLEGRO_SAMPLE_INSTANCE *atk_Sound;      //跳躍之音效
+    ALLEGRO_SAMPLE_INSTANCE *jump_Sound;     //跳躍之音效
     ALLEGRO_SAMPLE_INSTANCE *gameover_Sound; //跳躍之音效
     //控制連續動作之動畫時間(以下)
     int anime;      // counting the time of animation
@@ -32,7 +32,7 @@ Character littleMonster[LITTLE_MONSTER_NUM];
 Character bigMonster;
 bool dead = false;
 bool killmonster = false;
-ALLEGRO_BITMAP *gameover_bitmap = NULL;         //移動 用兩張圖
+ALLEGRO_BITMAP *gameover_bitmap = NULL; //移動 用兩張圖
 
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_SAMPLE *jump_effectsound = NULL;
@@ -101,7 +101,8 @@ void charater_process(ALLEGRO_EVENT event)
         {
             chara.anime++;
             chara.anime %= chara.anime_time; //％是為了知道 到最後一幀ex:29時下一個要結束
-            for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) {
+            for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+            {
                 littleMonster[i].anime_time = chara.anime_time;
                 littleMonster[i].anime = chara.anime; //％是為了知道 到最後一幀ex:29時下一個要結束
             }
@@ -139,7 +140,7 @@ void charater_update()
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
         }
-        else if (dead) 
+        else if (dead)
         {
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
@@ -183,7 +184,7 @@ void charater_update()
 void character_draw()
 {
     if (dead)
-        al_draw_bitmap(gameover_bitmap, 600, 200, 0);
+        al_draw_bitmap(gameover_bitmap, 630, 200, 0);
     if (chara.state == STOP) //角色什麼都不做時 在stop
     {
         if (chara.dir) //角色面對方向
@@ -253,20 +254,23 @@ void character_destory()
     al_destroy_sample_instance(chara.atk_Sound);
 }
 
-void littleMonster_init() 
+void littleMonster_init()
 {
-    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) {
-        for (int j = 1; j <= 2; ++j) {
+    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+    {
+        for (int j = 1; j <= 2; ++j)
+        {
             char temp[50];
             sprintf(temp, "./image/littleMonster_%d.png", j); //用迴圈 一張張把圖片load進去
-            littleMonster[i].img_move[j-1] = al_load_bitmap(temp);
+            littleMonster[i].img_move[j - 1] = al_load_bitmap(temp);
             char temp1[50];
             sprintf(temp1, "./image/hurt.png", j); //用迴圈 一張張把圖片load進去
-            littleMonster[i].img_hurt[j-1] = al_load_bitmap(temp1);
+            littleMonster[i].img_hurt[j - 1] = al_load_bitmap(temp1);
         }
     }
 
-    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) {
+    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+    {
         littleMonster[i].width = al_get_bitmap_width(littleMonster[i].img_move[0]);
         littleMonster[i].height = al_get_bitmap_height(littleMonster[i].img_move[0]);
         littleMonster[i].x = 1500 + 300 * i;
@@ -278,7 +282,8 @@ void littleMonster_init()
 void littleMonster_process(ALLEGRO_EVENT event)
 {
     // process the animation 畫動畫
-    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) {
+    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+    {
         if (event.type == ALLEGRO_EVENT_TIMER)
         {
             if (event.timer.source == fps)
@@ -299,20 +304,25 @@ void littleMonster_process(ALLEGRO_EVENT event)
         }
     }
 }
-void littleMonster_update() 
+void littleMonster_update()
 {
     if (dead)
         return;
     int diffx, diffy;
-    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) {
-        if (!littleMonster[i].hurt) {
+    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+    {
+        if (!littleMonster[i].hurt)
+        {
             littleMonster[i].x -= 2;
-            diffx = littleMonster[i].x > chara.x ? littleMonster[i].x - chara.x: chara.x - littleMonster[i].x;
-            diffy = littleMonster[i].y >chara.y ? littleMonster[i].y - chara.y:chara.y - littleMonster[i].y;
-            if (diffx < 450 && diffx >= 400 && diffy < 420) {
+            diffx = littleMonster[i].x > chara.x ? littleMonster[i].x - chara.x : chara.x - littleMonster[i].x;
+            diffy = littleMonster[i].y > chara.y ? littleMonster[i].y - chara.y : chara.y - littleMonster[i].y;
+            if (diffx < 450 && diffx >= 400 && diffy < 420)
+            {
                 dead = true;
                 al_play_sample_instance(chara.gameover_Sound);
-            } else if (diffx < 400  && diffy < 420) {
+            }
+            else if (diffx < 400 && diffy < 420)
+            {
                 littleMonster[i].hurt = true;
                 killmonster = true;
                 al_play_sample_instance(chara.atk_Sound);
@@ -320,25 +330,26 @@ void littleMonster_update()
         }
     }
 }
-void littleMonster_draw() 
+void littleMonster_draw()
 {
     // with the state, draw corresponding image
-    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) {
+    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+    {
         if (littleMonster[i].anime < littleMonster[i].anime_time / 2) //移動之第一張圖
             if (!littleMonster[i].hurt)
                 al_draw_bitmap(littleMonster[i].img_move[0], littleMonster[i].x, littleMonster[i].y, 0);
             else
                 al_draw_bitmap(littleMonster[i].img_hurt[0], littleMonster[i].x, littleMonster[i].y, 0);
+        else if (!littleMonster[i].hurt)
+            al_draw_bitmap(littleMonster[i].img_move[1], littleMonster[i].x, littleMonster[i].y, 0);
         else
-            if (!littleMonster[i].hurt)
-                al_draw_bitmap(littleMonster[i].img_move[1], littleMonster[i].x, littleMonster[i].y, 0);
-            else
-                al_draw_bitmap(littleMonster[i].img_hurt[1], littleMonster[i].x, littleMonster[i].y, 0);
+            al_draw_bitmap(littleMonster[i].img_hurt[1], littleMonster[i].x, littleMonster[i].y, 0);
     }
 }
-void littleMonster_destroy() 
+void littleMonster_destroy()
 {
-    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) {
+    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+    {
         al_destroy_bitmap(littleMonster[i].img_move[0]);
         al_destroy_bitmap(littleMonster[i].img_move[1]);
     }

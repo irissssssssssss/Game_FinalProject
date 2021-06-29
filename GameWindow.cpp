@@ -84,14 +84,16 @@ void game_begin()
 }
 void game_update()
 {
-    switch(judge_next_window) {
+    switch (judge_next_window)
+    {
     case NONE:
         break;
     case MENU:
         window = MENU;
         break;
     case START:
-        switch (window) {
+        switch (window)
+        {
         case START:
             charater_update();
             littleMonster_update();
@@ -158,24 +160,25 @@ int process_event()
     ALLEGRO_EVENT event;
     al_wait_for_event(event_queue, &event);
     // process the event of other component
-    switch (window) {
-        case MENU:
-            menu_process(event);
-            break;
-        case CHOSE_CHAR:
-            chose_process(event);
-            break;
-        case START:
-            charater_process(event);
-            break;
-        case SETTING:
-            setting_process(event);
-            break;
-        case HELP:
-            help_process(event);
-            break;
-        default:
-            break;
+    switch (window)
+    {
+    case MENU:
+        menu_process(event);
+        break;
+    case CHOSE_CHAR:
+        chose_process(event);
+        break;
+    case START:
+        charater_process(event);
+        break;
+    case SETTING:
+        setting_process(event);
+        break;
+    case HELP:
+        help_process(event);
+        break;
+    default:
+        break;
     }
 #if 0
     if (window == 1)
@@ -200,22 +203,23 @@ int process_event()
 }
 void game_draw() //範例遊戲有兩個畫面 所以開兩個window
 {
-    switch(window) {
-        case MENU:
-            menu_draw();
-            break;
-        case CHOSE_CHAR:
-            chose_draw();
-            break;
-        case START:
-            game_scene_draw();
-            break;
-        case SETTING:
-            setting_draw();
-            break;
-        case HELP:
-            help_draw();
-            break;
+    switch (window)
+    {
+    case MENU:
+        menu_draw();
+        break;
+    case CHOSE_CHAR:
+        chose_draw();
+        break;
+    case START:
+        game_scene_draw();
+        break;
+    case SETTING:
+        setting_draw();
+        break;
+    case HELP:
+        help_draw();
+        break;
     }
 #if 0
     if (window == 1) // 定義在本頁第一行

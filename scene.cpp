@@ -107,7 +107,7 @@ void game_scene_init(CHARATER charater)
     //bigMonster_init(bigMonster); //魔王
     game_background = al_load_bitmap("./image/background.jpeg"); //背景動圖
     heart = al_load_bitmap("./image/heart.png");
-    coin_count = al_load_bitmap("./image/coin.png");
+    coin_count = al_load_bitmap("./image/m_icon.png");
 }
 void game_scene_draw() //第二畫面內容 騎士
 {
@@ -116,6 +116,7 @@ void game_scene_draw() //第二畫面內容 騎士
     al_draw_bitmap(heart, 60, 10, 0);
     al_draw_bitmap(heart, 110, 10, 0);
     al_draw_bitmap(coin_count, 10, 60, 0);
+    al_draw_text(font_ins, al_map_rgb(255, 255, 255), 75, 70, ALLEGRO_ALIGN_CENTRE, "13"); //文字
     character_draw();
     littleMonster_draw();
 }
