@@ -103,7 +103,7 @@ void game_scene_init(CHARATER charater)
     //song_setting(game_song, game_sample_instance, "./sound/game_2.wav");
     song_setting(menu_song, menu_sample_instance, "./sound/game_2.wav");
     character_init(charater);
-    //littleMonster_init(littleMonster); //小怪物
+    littleMonster_init(); //小怪物
     //bigMonster_init(bigMonster); //魔王
     game_background = al_load_bitmap("./image/background.jpeg"); //背景動圖
     heart = al_load_bitmap("./image/heart.png");
@@ -117,6 +117,7 @@ void game_scene_draw() //第二畫面內容 騎士
     al_draw_bitmap(heart, 110, 10, 0);
     al_draw_bitmap(coin_count, 10, 60, 0);
     character_draw();
+    littleMonster_draw();
 }
 void game_scene_destroy()
 {
@@ -124,6 +125,7 @@ void game_scene_destroy()
     al_destroy_bitmap(heart);
     al_destroy_bitmap(coin_count);
     character_destory();
+    littleMonster_destroy();
 }
 
 // function of game_setting

@@ -94,6 +94,7 @@ void game_update()
         switch (window) {
         case START:
             charater_update();
+            littleMonster_update();
             break;
         case CHOSE_CHAR:
             chose_destroy();
