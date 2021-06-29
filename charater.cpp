@@ -10,22 +10,29 @@ enum //角色會出現的行為
 };
 typedef struct character //角色位置
 {
-    int x, y;                           // the position of image
-    int width, height;                  // the width and height of image
-    bool dir;                           // left: false, right: true 方向
-    int state;                          // the state of character
-    ALLEGRO_BITMAP *img_move[2];        //移動 用兩張圖
-    ALLEGRO_BITMAP *img_atk[2];         // 攻擊 用兩張圖
-    ALLEGRO_SAMPLE_INSTANCE *atk_Sound; //攻擊之音效
+    int x, y;                            // the position of image
+    int width, height;                   // the width and height of image
+    bool dir;                            // left: false, right: true 方向
+    int state;                           // the state of character
+    ALLEGRO_BITMAP *img_move[2];         //移動 用兩張圖
+    ALLEGRO_BITMAP *img_atk[2];          // 攻擊 用兩張圖
+    ALLEGRO_SAMPLE_INSTANCE *atk_Sound;  //跳躍之音效
+    ALLEGRO_SAMPLE_INSTANCE *jump_Sound; //跳躍之音效
     //控制連續動作之動畫時間(以下)
     int anime;      // counting the time of animation
     int anime_time; // indicate how long the animation
 } Character;
 Character chara;
+Character littleMonster;
+Character bigMonster;
+
 ALLEGRO_SAMPLE *sample = NULL;
+ALLEGRO_SAMPLE *jump_effectsound = NULL;
 const int jump_val_init = 50;
 int jump_val;
-#define JUMP_VEC  4
+bool jump = false;
+#define JUMP_VEC 4
+
 void character_init(CHARATER charater)
 {
     // load character images
@@ -49,6 +56,14 @@ void character_init(CHARATER charater)
     chara.atk_Sound = al_create_sample_instance(sample);
     al_set_sample_instance_playmode(chara.atk_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(chara.atk_Sound, al_get_default_mixer());
+
+    jump_effectsound = al_load_sample("./sound/jump.wav");
+    chara.jump_Sound = al_create_sample_instance(jump_effectsound);
+    al_set_sample_instance_playmode(chara.jump_Sound, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(chara.jump_Sound, al_get_default_mixer());
+    //加下面兩行音量調整 會說找不到函式
+    //al_set_sample_instance_gain(instance, 1);
+    //al_play_sample_instance(instance);
 
     // initial the geometric information of character
     chara.width = al_get_bitmap_width(chara.img_move[0]);
@@ -86,22 +101,27 @@ void charater_process(ALLEGRO_EVENT event)
 }
 void charater_update()
 {
-    if (chara.y != 0) {
+    if (chara.y != 0)
+    {
         chara.y -= jump_val;
         jump_val -= JUMP_VEC;
-        if (chara.y >= 0) {
+        if (chara.y >= 0)
+        {
             chara.y = 0;
             jump_val = jump_val_init;
         }
     }
 
-    if (key_state[ALLEGRO_KEY_UP])
+    if (key_state[ALLEGRO_KEY_SPACE])
     {
-        if (chara.y == 0) {
+        if (chara.y == 0)
+        {
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
             chara.state = JUMP;
-            if (chara.y >= 0) {
+            jump = true;
+            if (chara.y >= 0)
+            {
                 chara.y = 0;
                 jump_val = jump_val_init;
             }
@@ -196,16 +216,20 @@ void character_draw()
                 al_play_sample_instance(chara.atk_Sound);
             }
         }
-    } else if (chara.state == JUMP) {
+    }
+    else if (chara.state == JUMP || jump)
+    {
         if (chara.dir)
         {
             if (chara.anime < chara.anime_time / 2) //移動之第一張圖
             {
                 al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
+                al_play_sample_instance(chara.jump_Sound); //跳躍之音效
             }
             else //大於 移動之第二張圖
             {
                 al_draw_bitmap(chara.img_move[1], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
+                al_play_sample_instance(chara.jump_Sound); //跳躍之音效
             }
         }
         else
@@ -213,12 +237,15 @@ void character_draw()
             if (chara.anime < chara.anime_time / 2)
             {
                 al_draw_bitmap(chara.img_move[0], chara.x, chara.y, 0);
+                al_play_sample_instance(chara.jump_Sound); //跳躍之音效
             }
             else
             {
                 al_draw_bitmap(chara.img_move[1], chara.x, chara.y, 0);
+                al_play_sample_instance(chara.jump_Sound); //跳躍之音效
             }
         }
+        jump = false;
     }
 }
 void character_destory()
@@ -229,3 +256,13 @@ void character_destory()
     al_destroy_bitmap(chara.img_move[1]);
     al_destroy_sample_instance(chara.atk_Sound);
 }
+
+void littleMonster_init() {}
+void littleMonster_update() {}
+void littleMonster_draw() {}
+void littleMonster_destroy() {}
+
+void bigMonster_init() {}
+void bigMonster_update() {}
+void bigMonster_draw() {}
+void bigMonster_destroy() {}
