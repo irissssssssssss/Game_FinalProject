@@ -2,7 +2,7 @@
 
 bool draw = false;
 
-const char *title = "Final Project 10603124550 詹敦潔 / 1092169S 陳思妤";
+const char *title = "Final Project 106031245 詹敦潔 / 1092169S 陳思妤";
 
 // ALLEGRO Variables
 ALLEGRO_DISPLAY *display = NULL;
