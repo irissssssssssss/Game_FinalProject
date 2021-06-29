@@ -30,8 +30,7 @@ ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_SAMPLE *jump_effectsound = NULL;
 const int jump_val_init = 50;
 int jump_val;
-bool jump = false;
-#define JUMP_VEC 4
+#define JUMP_VEC 3
 
 void character_init(CHARATER charater)
 {
@@ -116,15 +115,9 @@ void charater_update()
     {
         if (chara.y == 0)
         {
+            al_play_sample_instance(chara.jump_Sound); //跳躍之音效
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
-            chara.state = JUMP;
-            jump = true;
-            if (chara.y >= 0)
-            {
-                chara.y = 0;
-                jump_val = jump_val_init;
-            }
         }
     }
 
@@ -216,36 +209,6 @@ void character_draw()
                 al_play_sample_instance(chara.atk_Sound);
             }
         }
-    }
-    else if (chara.state == JUMP || jump)
-    {
-        if (chara.dir)
-        {
-            if (chara.anime < chara.anime_time / 2) //移動之第一張圖
-            {
-                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
-                al_play_sample_instance(chara.jump_Sound); //跳躍之音效
-            }
-            else //大於 移動之第二張圖
-            {
-                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
-                al_play_sample_instance(chara.jump_Sound); //跳躍之音效
-            }
-        }
-        else
-        {
-            if (chara.anime < chara.anime_time / 2)
-            {
-                al_draw_bitmap(chara.img_move[0], chara.x, chara.y, 0);
-                al_play_sample_instance(chara.jump_Sound); //跳躍之音效
-            }
-            else
-            {
-                al_draw_bitmap(chara.img_move[1], chara.x, chara.y, 0);
-                al_play_sample_instance(chara.jump_Sound); //跳躍之音效
-            }
-        }
-        jump = false;
     }
 }
 void character_destory()
