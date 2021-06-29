@@ -32,6 +32,7 @@ Character littleMonster[LITTLE_MONSTER_NUM];
 Character bigMonster;
 bool dead = false;
 bool killmonster = false;
+ALLEGRO_BITMAP *gameover_bitmap = NULL;         //移動 用兩張圖
 
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_SAMPLE *jump_effectsound = NULL;
@@ -89,6 +90,7 @@ void character_init(CHARATER charater)
     chara.state = STOP;
     chara.anime = 0;
     chara.anime_time = 30; //一動作xx幀
+    gameover_bitmap = al_load_bitmap("./image/gameover.png");
 }
 void charater_process(ALLEGRO_EVENT event)
 {
@@ -180,6 +182,8 @@ void charater_update()
 }
 void character_draw()
 {
+    if (dead)
+        al_draw_bitmap(gameover_bitmap, 600, 200, 0);
     if (chara.state == STOP) //角色什麼都不做時 在stop
     {
         if (chara.dir) //角色面對方向
