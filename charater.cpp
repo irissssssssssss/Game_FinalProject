@@ -8,7 +8,7 @@ enum //角色會出現的行為
     ATK,
     JUMP
 };
-#define LITTLE_MONSTER_NUM 3
+#define LITTLE_MONSTER_NUM 20
 typedef struct character //角色位置
 {
     int x, y;                            // the position of image
@@ -20,18 +20,22 @@ typedef struct character //角色位置
     ALLEGRO_BITMAP *img_hurt[2];          // 攻擊 用兩張圖
     ALLEGRO_SAMPLE_INSTANCE *atk_Sound;  //跳躍之音效
     ALLEGRO_SAMPLE_INSTANCE *jump_Sound; //跳躍之音效
+    ALLEGRO_SAMPLE_INSTANCE *gameover_Sound; //跳躍之音效
     //控制連續動作之動畫時間(以下)
     int anime;      // counting the time of animation
     int anime_time; // indicate how long the animation
     bool hurt = 0;
+    int dead_time = 0;
 } Character;
 Character chara;
 Character littleMonster[LITTLE_MONSTER_NUM];
 Character bigMonster;
 bool dead = false;
+bool killmonster = false;
 
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_SAMPLE *jump_effectsound = NULL;
+ALLEGRO_SAMPLE *gameover_sound = NULL;
 const int jump_val_init = 50;
 int jump_val;
 #define JUMP_VEC 3
@@ -59,6 +63,7 @@ void character_init(CHARATER charater)
     chara.atk_Sound = al_create_sample_instance(sample);
     al_set_sample_instance_playmode(chara.atk_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(chara.atk_Sound, al_get_default_mixer());
+    al_set_sample_instance_gain(chara.atk_Sound, 2);
 
     jump_effectsound = al_load_sample("./sound/jump.wav");
     chara.jump_Sound = al_create_sample_instance(jump_effectsound);
@@ -66,6 +71,12 @@ void character_init(CHARATER charater)
     al_attach_sample_instance_to_mixer(chara.jump_Sound, al_get_default_mixer());
     //加下面兩行音量調整 會說找不到函式
     al_set_sample_instance_gain(chara.jump_Sound, 0.5);
+
+    gameover_sound = al_load_sample("./sound/GameFail.wav");
+    chara.gameover_Sound = al_create_sample_instance(gameover_sound);
+    al_set_sample_instance_playmode(chara.gameover_Sound, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(chara.gameover_Sound, al_get_default_mixer());
+    al_set_sample_instance_gain(chara.gameover_Sound, 2);
 
     // initial the geometric information of character
     chara.width = al_get_bitmap_width(chara.img_move[0]);
@@ -118,18 +129,25 @@ void charater_update()
         }
     }
 
-    if (key_state[ALLEGRO_KEY_SPACE] || dead)
+    if (key_state[ALLEGRO_KEY_SPACE] || killmonster || dead)
     {
-        if (!dead && chara.y == 0)
+        if (!dead && !killmonster && chara.y == 0)
         {
             al_play_sample_instance(chara.jump_Sound); //跳躍之音效
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
         }
-        if (dead) 
+        else if (dead) 
         {
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
+        }
+        else if (killmonster)
+        {
+            jump_val -= 10;
+            chara.y -= jump_val;
+            jump_val -= JUMP_VEC;
+            killmonster = false;
         }
     }
 
@@ -281,12 +299,20 @@ void littleMonster_update()
 {
     if (dead)
         return;
+    int diffx, diffy;
     for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) {
-        if (!littleMonster[i].hurt)
+        if (!littleMonster[i].hurt) {
             littleMonster[i].x -= 2;
-        if (littleMonster[i].x < 800) {
-            littleMonster[i].hurt = true;
-            dead = true;
+            diffx = littleMonster[i].x > chara.x ? littleMonster[i].x - chara.x: chara.x - littleMonster[i].x;
+            diffy = littleMonster[i].y >chara.y ? littleMonster[i].y - chara.y:chara.y - littleMonster[i].y;
+            if (diffx < 450 && diffx >= 400 && diffy < 420) {
+                dead = true;
+                al_play_sample_instance(chara.gameover_Sound);
+            } else if (diffx < 400  && diffy < 420) {
+                littleMonster[i].hurt = true;
+                killmonster = true;
+                al_play_sample_instance(chara.atk_Sound);
+            }
         }
     }
 }
