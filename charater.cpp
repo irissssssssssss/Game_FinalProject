@@ -8,7 +8,7 @@ enum //角色會出現的行為
     ATK,
     JUMP
 };
-#define LITTLE_MONSTER_NUM 20
+#define LITTLE_MONSTER_NUM 1
 typedef struct character //角色位置
 {
     int x, y;                                // the position of image
@@ -32,11 +32,16 @@ Character littleMonster[LITTLE_MONSTER_NUM];
 Character bigMonster;
 bool dead = false;
 bool killmonster = false;
+int killmonster_count = 0;
 ALLEGRO_BITMAP *gameover_bitmap = NULL; //移動 用兩張圖
+ALLEGRO_BITMAP *gamepass_bitmap = NULL; //移動 用兩張圖
 
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_SAMPLE *jump_effectsound = NULL;
 ALLEGRO_SAMPLE *gameover_sound = NULL;
+ALLEGRO_FONT *font_count = NULL;
+ALLEGRO_SAMPLE *gamepass_sound = NULL;
+ALLEGRO_SAMPLE_INSTANCE *gamepass_sound_instance = NULL; //跳躍之音效
 const int jump_val_init = 50;
 int jump_val;
 #define JUMP_VEC 3
@@ -79,6 +84,12 @@ void character_init(CHARATER charater)
     al_attach_sample_instance_to_mixer(chara.gameover_Sound, al_get_default_mixer());
     al_set_sample_instance_gain(chara.gameover_Sound, 2);
 
+    gamepass_sound = al_load_sample("./sound/success.wav");
+    gamepass_sound_instance = al_create_sample_instance(gamepass_sound);
+    al_set_sample_instance_playmode(gamepass_sound_instance, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(gamepass_sound_instance, al_get_default_mixer());
+    al_set_sample_instance_gain(gamepass_sound_instance, 2);
+
     // initial the geometric information of character
     chara.width = al_get_bitmap_width(chara.img_move[0]);
     chara.height = al_get_bitmap_height(chara.img_move[0]);
@@ -91,6 +102,8 @@ void character_init(CHARATER charater)
     chara.anime = 0;
     chara.anime_time = 30; //一動作xx幀
     gameover_bitmap = al_load_bitmap("./image/gameover.png");
+    gamepass_bitmap = al_load_bitmap("./image/gamepass.png");
+    font_count = al_load_ttf_font("./font/pirulen.ttf", 15, 0);
 }
 void charater_process(ALLEGRO_EVENT event)
 {
@@ -325,6 +338,7 @@ void littleMonster_update()
             {
                 littleMonster[i].hurt = true;
                 killmonster = true;
+                killmonster_count++;
                 al_play_sample_instance(chara.atk_Sound);
             }
         }
@@ -332,6 +346,15 @@ void littleMonster_update()
 }
 void littleMonster_draw()
 {
+    static bool pass = false;
+    if (killmonster_count == LITTLE_MONSTER_NUM) {
+        al_draw_bitmap(gamepass_bitmap, 630, 200, 0);
+        if (!pass) {
+            al_play_sample_instance(gamepass_sound_instance); //跳躍之音效
+            pass++;
+        }
+    }
+
     // with the state, draw corresponding image
     for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
     {
@@ -345,6 +368,9 @@ void littleMonster_draw()
         else
             al_draw_bitmap(littleMonster[i].img_hurt[1], littleMonster[i].x, littleMonster[i].y, 0);
     }
+    char temp[10];
+    sprintf(temp, "%d", killmonster_count); //用迴圈 一張張把圖片load進去
+    al_draw_text(font_count, al_map_rgb(255, 255, 255), 75, 70, ALLEGRO_ALIGN_CENTRE, temp); //文字
 }
 void littleMonster_destroy()
 {
