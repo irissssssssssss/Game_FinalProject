@@ -80,7 +80,7 @@ void game_begin()
 #endif
     al_start_timer(fps);
     // initialize the menu before entering the loop
-    menu_init(); //主畫面內容 在scene.cpp
+    menu_init(); //主畫面內容
 }
 void game_update()
 {
@@ -92,7 +92,7 @@ void game_update()
         window = MENU;
         break;
     case START:
-        switch (window)
+        switch (window) //下一步
         {
         case START:
             charater_update();

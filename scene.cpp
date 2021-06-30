@@ -18,6 +18,7 @@ ALLEGRO_SAMPLE *menu_song = NULL;
 ALLEGRO_SAMPLE_INSTANCE *menu_sample_instance = NULL;
 ALLEGRO_SAMPLE *game_song = NULL;
 ALLEGRO_SAMPLE_INSTANCE *game_sample_instance = NULL;
+float volume_value = 1.0;
 
 static void song_setting(ALLEGRO_SAMPLE *song, ALLEGRO_SAMPLE_INSTANCE *instance, char *path)
 {
@@ -182,8 +183,17 @@ void setting_process(ALLEGRO_EVENT event)
         case ALLEGRO_KEY_BACKSPACE:
             judge_next_window = MENU;
             break;
-        default:
-            break;
+        /*無法支援動態修改*/
+        case ALLEGRO_KEY_PAD_MINUS:
+        {
+            //al_set_sample_instance_gain(menu_sample_instance, volume_value);
+        }
+        break;
+        case ALLEGRO_KEY_PAD_PLUS:
+        {
+            //al_set_sample_instance_gain(menu_sample_instance, volume_value);
+        }
+        break;
         }
     }
 }

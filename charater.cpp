@@ -8,8 +8,8 @@ enum //角色會出現的行為
     ATK,
     JUMP
 };
-#define LITTLE_MONSTER_NUM 1
-typedef struct character //角色位置
+#define LITTLE_MONSTER_NUM 2 //monster數量
+typedef struct character     //角色屬性
 {
     int x, y;                                // the position of image
     int width, height;                       // the width and height of image
@@ -25,7 +25,8 @@ typedef struct character //角色位置
     int anime;      // counting the time of animation
     int anime_time; // indicate how long the animation
     bool hurt = 0;
-    int dead_time = 0;
+    int dead_time;
+    bool destroy[2];
 } Character;
 Character chara;
 Character littleMonster[LITTLE_MONSTER_NUM];
@@ -33,15 +34,16 @@ Character bigMonster;
 bool dead = false;
 bool killmonster = false;
 int killmonster_count = 0;
-ALLEGRO_BITMAP *gameover_bitmap = NULL; //移動 用兩張圖
-ALLEGRO_BITMAP *gamepass_bitmap = NULL; //移動 用兩張圖
+ALLEGRO_BITMAP *gameover_bitmap = NULL;
+ALLEGRO_BITMAP *gamepass_bitmap = NULL;
 
 ALLEGRO_SAMPLE *sample = NULL;
 ALLEGRO_SAMPLE *jump_effectsound = NULL;
 ALLEGRO_SAMPLE *gameover_sound = NULL;
-ALLEGRO_FONT *font_count = NULL;
 ALLEGRO_SAMPLE *gamepass_sound = NULL;
-ALLEGRO_SAMPLE_INSTANCE *gamepass_sound_instance = NULL; //跳躍之音效
+
+ALLEGRO_FONT *font_count = NULL;
+ALLEGRO_SAMPLE_INSTANCE *gamepass_sound_instance = NULL;
 const int jump_val_init = 50;
 int jump_val;
 #define JUMP_VEC 3
@@ -58,14 +60,9 @@ void character_init(CHARATER charater)
             sprintf(temp, "./image/girl_%d.png", i); //用迴圈 一張張把圖片load進去
         chara.img_move[i - 1] = al_load_bitmap(temp);
     }
-    for (int i = 1; i <= 2; i++)
-    {
-        char temp[50];
-        sprintf(temp, "./image/char_atk%d.png", i);
-        chara.img_atk[i - 1] = al_load_bitmap(temp);
-    }
+
     // load effective sound
-    sample = al_load_sample("./sound/GetCoin.wav");
+    sample = al_load_sample("./sound/Attack.wav");
     chara.atk_Sound = al_create_sample_instance(sample);
     al_set_sample_instance_playmode(chara.atk_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(chara.atk_Sound, al_get_default_mixer());
@@ -75,7 +72,6 @@ void character_init(CHARATER charater)
     chara.jump_Sound = al_create_sample_instance(jump_effectsound);
     al_set_sample_instance_playmode(chara.jump_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(chara.jump_Sound, al_get_default_mixer());
-    //加下面兩行音量調整 會說找不到函式
     al_set_sample_instance_gain(chara.jump_Sound, 0.5);
 
     gameover_sound = al_load_sample("./sound/GameFail.wav");
@@ -101,6 +97,7 @@ void character_init(CHARATER charater)
     chara.state = STOP;
     chara.anime = 0;
     chara.anime_time = 30; //一動作xx幀
+
     gameover_bitmap = al_load_bitmap("./image/gameover.png");
     gamepass_bitmap = al_load_bitmap("./image/gamepass.png");
     font_count = al_load_ttf_font("./font/pirulen.ttf", 15, 0);
@@ -122,7 +119,7 @@ void charater_process(ALLEGRO_EVENT event)
         }
         // process the keyboard event
     }
-    else if (event.type == ALLEGRO_EVENT_KEY_DOWN) //按 往下 執行動作
+    else if (event.type == ALLEGRO_EVENT_KEY_DOWN) //按鍵按下 執行動作
     {
         key_state[event.keyboard.keycode] = true;
         chara.anime = 0;
@@ -134,51 +131,48 @@ void charater_process(ALLEGRO_EVENT event)
 }
 void charater_update()
 {
+    /* 跳躍延續處理 */
     if (chara.y != 0)
     {
         chara.y -= jump_val;
         jump_val -= JUMP_VEC;
-        if (chara.y >= 0 && !dead)
+        if (chara.y >= 0 && !dead) //沒掛 只會落回地面
         {
             chara.y = 0;
             jump_val = jump_val_init;
         }
     }
 
-    if (key_state[ALLEGRO_KEY_SPACE] || killmonster || dead)
+    if (key_state[ALLEGRO_KEY_SPACE] || killmonster || dead) //彈起來
     {
-        if (!dead && !killmonster && chara.y == 0)
+        if (!dead && !killmonster && chara.y == 0) //只在地面 要跳時
         {
             al_play_sample_instance(chara.jump_Sound); //跳躍之音效
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
         }
-        else if (dead)
+        else if (dead) //掛掉 彈起
         {
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
         }
-        else if (killmonster)
+        else if (killmonster) //殺完 彈起
         {
-            jump_val -= 10;
+            jump_val -= 10; //減速 才不會跳過高
             chara.y -= jump_val;
             jump_val -= JUMP_VEC;
             killmonster = false;
         }
     }
 
-    if (key_state[ALLEGRO_KEY_LEFT])
+    if (key_state[ALLEGRO_KEY_LEFT]) //左跑
     {
         chara.dir = false;
         chara.x -= 5;
         chara.state = MOVE;
     }
-    /*else if (key_state[ALLEGRO_KEY_S])
-    {
-        chara.y += 5;
-        chara.state = MOVE;
-    }*/
-    else if (key_state[ALLEGRO_KEY_RIGHT])
+
+    else if (key_state[ALLEGRO_KEY_RIGHT]) //右跑
     {
         chara.dir = true;
         chara.x += 5;
@@ -196,7 +190,7 @@ void charater_update()
 }
 void character_draw()
 {
-    if (dead)
+    if (dead) //掛了 出現Gameover
         al_draw_bitmap(gameover_bitmap, 630, 200, 0);
     if (chara.state == STOP) //角色什麼都不做時 在stop
     {
@@ -230,33 +224,6 @@ void character_draw()
             }
         }
     }
-    else if (chara.state == ATK) //攻擊動作 之連續動畫
-    {
-        if (chara.dir)
-        {
-            if (chara.anime < chara.anime_time / 2) //攻擊舉劍動作 維持時間
-            {
-                al_draw_bitmap(chara.img_atk[0], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
-            }
-            else //大於時 做 攻擊揮劍動作
-            {
-                al_draw_bitmap(chara.img_atk[1], chara.x, chara.y, ALLEGRO_FLIP_HORIZONTAL);
-                al_play_sample_instance(chara.atk_Sound); //揮劍之音效
-            }
-        }
-        else
-        {
-            if (chara.anime < chara.anime_time / 2)
-            {
-                al_draw_bitmap(chara.img_atk[0], chara.x, chara.y, 0);
-            }
-            else
-            {
-                al_draw_bitmap(chara.img_atk[1], chara.x, chara.y, 0);
-                al_play_sample_instance(chara.atk_Sound);
-            }
-        }
-    }
 }
 void character_destory()
 {
@@ -280,9 +247,10 @@ void littleMonster_init()
             sprintf(temp1, "./image/hurt.png", j); //用迴圈 一張張把圖片load進去
             littleMonster[i].img_hurt[j - 1] = al_load_bitmap(temp1);
         }
+        littleMonster[i].dead_time = 0;
     }
 
-    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) //依monster數量load進來
     {
         littleMonster[i].width = al_get_bitmap_width(littleMonster[i].img_move[0]);
         littleMonster[i].height = al_get_bitmap_height(littleMonster[i].img_move[0]);
@@ -319,26 +287,26 @@ void littleMonster_process(ALLEGRO_EVENT event)
 }
 void littleMonster_update()
 {
-    if (dead)
+    if (dead) // 怪獸掛了 不用再判斷接觸距離
         return;
     int diffx, diffy;
     for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
     {
-        if (!littleMonster[i].hurt)
+        if (!littleMonster[i].hurt) //怪獸沒掛時 要做碰觸距離判斷
         {
-            littleMonster[i].x -= 2;
+            littleMonster[i].x -= 2; //怪獸移動速度
             diffx = littleMonster[i].x > chara.x ? littleMonster[i].x - chara.x : chara.x - littleMonster[i].x;
             diffy = littleMonster[i].y > chara.y ? littleMonster[i].y - chara.y : chara.y - littleMonster[i].y;
-            if (diffx < 450 && diffx >= 400 && diffy < 420)
+            if (diffx < 450 && diffx >= 400 && diffy < 420) //被怪獸殺
             {
                 dead = true;
                 al_play_sample_instance(chara.gameover_Sound);
             }
-            else if (diffx < 400 && diffy < 420)
+            else if (diffx < 400 && diffy < 420) //成功殺到怪獸
             {
                 littleMonster[i].hurt = true;
                 killmonster = true;
-                killmonster_count++;
+                killmonster_count++; //殺死數量計算
                 al_play_sample_instance(chara.atk_Sound);
             }
         }
@@ -346,31 +314,43 @@ void littleMonster_update()
 }
 void littleMonster_draw()
 {
-    static bool pass = false;
-    if (killmonster_count == LITTLE_MONSTER_NUM) {
-        al_draw_bitmap(gamepass_bitmap, 630, 200, 0);
-        if (!pass) {
-            al_play_sample_instance(gamepass_sound_instance); //跳躍之音效
-            pass++;
+    static bool gamepass_sound_play = false;
+    if (killmonster_count == LITTLE_MONSTER_NUM) //殺死達到目標數量 過關！
+    {
+        al_draw_bitmap(gamepass_bitmap, 700, 200, 0); //出現過關圖
+        if (!gamepass_sound_play)                     //沒放過過關音效
+        {
+            al_play_sample_instance(gamepass_sound_instance); //放一次
+            gamepass_sound_play = true;
         }
     }
 
     // with the state, draw corresponding image
-    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i)
+    for (int i = 0; i < LITTLE_MONSTER_NUM; ++i) //更新怪獸
     {
-        if (littleMonster[i].anime < littleMonster[i].anime_time / 2) //移動之第一張圖
-            if (!littleMonster[i].hurt)
+        if (littleMonster[i].anime < littleMonster[i].anime_time / 2)
+        {                               //移動之第一張圖
+            if (!littleMonster[i].hurt) //沒死 繼續走
                 al_draw_bitmap(littleMonster[i].img_move[0], littleMonster[i].x, littleMonster[i].y, 0);
-            else
+            else // 掛了 變扁掉的圖
+            {
                 al_draw_bitmap(littleMonster[i].img_hurt[0], littleMonster[i].x, littleMonster[i].y, 0);
-        else if (!littleMonster[i].hurt)
-            al_draw_bitmap(littleMonster[i].img_move[1], littleMonster[i].x, littleMonster[i].y, 0);
+            }
+        }
         else
-            al_draw_bitmap(littleMonster[i].img_hurt[1], littleMonster[i].x, littleMonster[i].y, 0);
+        {
+            if (!littleMonster[i].hurt)
+                al_draw_bitmap(littleMonster[i].img_move[1], littleMonster[i].x, littleMonster[i].y, 0);
+            else
+            {
+                al_draw_bitmap(littleMonster[i].img_hurt[1], littleMonster[i].x, littleMonster[i].y, 0);
+            }
+        }
     }
+    //killed monster number
     char temp[10];
-    sprintf(temp, "%d", killmonster_count); //用迴圈 一張張把圖片load進去
-    al_draw_text(font_count, al_map_rgb(255, 255, 255), 75, 70, ALLEGRO_ALIGN_CENTRE, temp); //文字
+    sprintf(temp, "%d", killmonster_count);
+    al_draw_text(font_count, al_map_rgb(255, 255, 255), 75, 70, ALLEGRO_ALIGN_CENTRE, temp);
 }
 void littleMonster_destroy()
 {
@@ -380,8 +360,3 @@ void littleMonster_destroy()
         al_destroy_bitmap(littleMonster[i].img_move[1]);
     }
 }
-
-void bigMonster_init() {}
-void bigMonster_update() {}
-void bigMonster_draw() {}
-void bigMonster_destroy() {}
